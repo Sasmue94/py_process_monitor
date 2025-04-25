@@ -4,23 +4,23 @@ from tabulate import tabulate
 
 # gets process ID, name, username and established remote connections
 def get_processes():
-    procs = []
+    procs: list[dict] = []
     for p in psutil.process_iter():
         with p.oneshot():
-            pid = p.pid
+            pid: int = p.pid
             if pid == 0:
                 continue
-            name = p.name()
+            name: str = p.name()
             try:
-                create_time = datetime.datetime.fromtimestamp(p.create_time())
+                create_time: datetime = datetime.datetime.fromtimestamp(p.create_time())
             except OSError:
-                create_time = datetime.datetime.fromtimestamp(psutil.boot_time())
+                create_time: datetime = datetime.datetime.fromtimestamp(psutil.boot_time())
             status = p.status()
             try:
-                user = p.username()
+                user: str = p.username()
             except psutil.AccessDenied:
-                user = "N/A"
-            conns = p.net_connections()
+                user: str = "N/A"
+            conns: list = p.net_connections()
             if conns:
                 conns = conns[0][4]
             else:
@@ -41,4 +41,5 @@ def get_processes():
 def print_procs(processes: list[dict]):
     print(tabulate(processes, headers="keys", tablefmt="github"))
 
-print_procs(get_processes())
+if __name__ == "__main__":
+    print_procs(get_processes())
